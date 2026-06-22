@@ -1,0 +1,13 @@
+Config:     configs/convnext/convnext-large_upernet_40k_spalling-512x512.py
+Checkpoint: work_dirs/convnext-large_upernet_40k_spalling-512x512/best_mIoU_iter_36000.pth
+Images:     225
+
++---------------+-------+-------+-----------+--------+------+
+|     Class     |  IoU  |   F1  | Precision | Recall | FPR  |
++---------------+-------+-------+-----------+--------+------+
+|   background  | 97.74 | 98.86 |   98.94   | 98.78  |  -   |
+| spalling      | 92.42 | 96.06 |   95.79   | 96.33  | 1.22 |
++---------------+-------+-------+-----------+--------+------+
+
+mIoU: 95.08
+mF1:  97.46

@@ -1,0 +1,13 @@
+Config:     configs/mask2former/mask2former_swin-b_40k_spalling-512x512.py
+Checkpoint: work_dirs/mask2former_swin-b_40k_spalling-512x512/best_mIoU_iter_36000.pth
+Images:     225
+
++---------------+-------+-------+-----------+--------+------+
+|     Class     |  IoU  |   F1  | Precision | Recall | FPR  |
++---------------+-------+-------+-----------+--------+------+
+|   background  | 97.60 | 98.79 |   99.12   | 98.45  |  -   |
+| spalling      | 92.04 | 95.86 |   94.75   | 96.98  | 1.55 |
++---------------+-------+-------+-----------+--------+------+
+
+mIoU: 94.82
+mF1:  97.32

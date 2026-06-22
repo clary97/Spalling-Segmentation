@@ -1,0 +1,13 @@
+Config:     configs/swin/swin-large_upernet_40k_spalling-512x512.py
+Checkpoint: work_dirs/swin-large_upernet_40k_spalling-512x512/best_mIoU_iter_40000.pth
+Images:     225
+
++---------------+-------+-------+-----------+--------+------+
+|     Class     |  IoU  |   F1  | Precision | Recall | FPR  |
++---------------+-------+-------+-----------+--------+------+
+|   background  | 97.47 | 98.72 |   98.93   | 98.52  |  -   |
+| spalling      | 91.59 | 95.61 |   94.93   | 96.30  | 1.48 |
++---------------+-------+-------+-----------+--------+------+
+
+mIoU: 94.53
+mF1:  97.16
