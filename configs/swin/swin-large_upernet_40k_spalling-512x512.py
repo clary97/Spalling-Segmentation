@@ -4,6 +4,10 @@ _base_ = [
     '../_base_/default_runtime.py',
     '../_base_/schedules/schedule_40k.py',
 ]
+
+custom_imports = dict(
+    imports=['spalling_seg.datasets'], allow_failed_imports=False)
+
 crop_size = (512, 512)
 data_preprocessor = dict(size=crop_size)
 checkpoint_file = 'checkpoints/swin_large_patch4_window12_384_22k_20220412-6580f57d.pth'  # local

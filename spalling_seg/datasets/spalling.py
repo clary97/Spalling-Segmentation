@@ -1,5 +1,5 @@
 from mmseg.registry import DATASETS
-from .basesegdataset import BaseSegDataset
+from mmseg.datasets import BaseSegDataset
 
 
 @DATASETS.register_module()

@@ -1,6 +1,9 @@
 # dataset settings — unified binary spalling (CUBIT_Seg + DamSeg + HRCDS)
 # Built by tools/build_spalling_dataset.py
 #   {split}/images -> symlinked source images (.jpg), {split}/masks -> binary .png {0,1}
+
+# 주: SpallingDataset 등록을 위한 custom_imports 는 각 모델 config(leaf)에 둔다.
+# (base config 간 custom_imports 키 중복을 피하기 위함 — 예: upernet_convnext 가 이미 보유)
 dataset_type = 'SpallingDataset'
 data_root = 'data/spalling'
 crop_size = (512, 512)

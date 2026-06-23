@@ -1,0 +1,8 @@
+# PyTorch는 CUDA 버전에 맞게 먼저 설치하세요 (예: torch==2.1.x).
+# 아래는 학습/평가에 사용한 OpenMMLab 스택 버전(핀 고정).
+mmengine==0.10.7
+mmcv==2.1.0
+mmsegmentation==1.2.2
+mmdet==3.3.0        # Mask2Former head
+mmpretrain==1.2.0  # ConvNeXt backbone
+openmim

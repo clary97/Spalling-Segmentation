@@ -5,6 +5,10 @@ _base_ = [
     '../_base_/schedules/schedule_40k.py'
 ]
 
+custom_imports = dict(
+    imports=['mmpretrain.models', 'spalling_seg.datasets'], allow_failed_imports=False)
+
+
 crop_size = (512, 512)
 data_preprocessor = dict(size=crop_size)
 checkpoint_file = 'checkpoints/convnext-large_3rdparty_in21k_20220301-e6e0ea0a.pth'  # local

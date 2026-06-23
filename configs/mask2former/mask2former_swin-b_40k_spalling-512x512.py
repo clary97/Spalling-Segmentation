@@ -3,6 +3,10 @@ _base_ = [
     '../_base_/datasets/spalling.py'
 ]
 
+custom_imports = dict(
+    imports=['spalling_seg.datasets'], allow_failed_imports=False)
+
+
 # Pretrained backbone (로컬 파일)
 pretrained = 'checkpoints/swin_base_patch4_window12_384_22k_20220317-e5c09f74.pth'
 

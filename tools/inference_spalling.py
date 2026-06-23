@@ -41,13 +41,13 @@ from prettytable import PrettyTable
 
 from mmseg.apis import init_model, inference_model
 
-# 클래스 색상 (binary: background, efflorescence)
+# 클래스 색상 (binary: background, spalling)
 PALETTE = np.array([
     [0, 0, 0],        # background
     [255, 0, 0],      # efflorescence (red)
 ], dtype=np.uint8)
 
-CLASS_NAMES = ('background', 'Efflorescence')
+CLASS_NAMES = ('background', 'spalling')
 
 
 def parse_args():
@@ -223,7 +223,7 @@ def main():
         table.add_row(['background',
                        f'{iou_b*100:.2f}', f'{f1_b*100:.2f}',
                        f'{precision_b*100:.2f}', f'{recall_b*100:.2f}', '-'])
-        table.add_row(['Efflorescence',
+        table.add_row(['spalling',
                        f'{iou_d*100:.2f}', f'{f1_d*100:.2f}',
                        f'{precision_d*100:.2f}', f'{recall_d*100:.2f}',
                        f'{fpr_d*100:.2f}'])
