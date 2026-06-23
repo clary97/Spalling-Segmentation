@@ -1,5 +1,0 @@
-Metadata-Version: 2.4
-Name: spalling-seg
-Version: 0.1.0
-Summary: Binary spalling segmentation (CUBIT_Seg + DamSeg + HRCDS) built on mmsegmentation
-Requires-Python: >=3.8

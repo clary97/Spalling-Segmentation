@@ -12,3 +12,8 @@ __pycache__/
 
 # OS
 .DS_Store
+
+# pip editable 빌드 부산물
+*.egg-info/
+build/
+dist/
