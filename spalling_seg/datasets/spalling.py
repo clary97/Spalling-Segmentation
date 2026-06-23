@@ -2,7 +2,10 @@ from mmseg.registry import DATASETS
 from mmseg.datasets import BaseSegDataset
 
 
-@DATASETS.register_module()
+# force=True: 동일 이름이 이미 등록돼 있어도(예: mmseg 소스에 in-tree 복사본이
+# 있는 개발 포크 환경) 안전하게 override. 깨끗한 pip-install 환경에선 override 대상이
+# 없으므로 일반 등록과 동일하게 동작한다.
+@DATASETS.register_module(force=True)
 class SpallingDataset(BaseSegDataset):
     """Unified binary *spalling* dataset (CUBIT_Seg + DamSeg + HRCDS).
 

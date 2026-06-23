@@ -18,7 +18,7 @@ for CFG in "${CONFIGS[@]}"; do
   echo "==================================================================="
   echo "[$(date '+%F %T')] START  $NAME (gpus=$NGPUS)"
   echo "==================================================================="
-  mim train mmsegmentation "$CFG" --gpus "$NGPUS" --launcher pytorch --work-dir "$WD"
+  bash tools/dist_train.sh "$CFG" "$NGPUS" --work-dir "$WD"
   RC=$?
   if [ $RC -ne 0 ]; then
     echo "[$(date '+%F %T')] FAILED $NAME (rc=$RC) — 다음 모델로 진행"
