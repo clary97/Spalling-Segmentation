@@ -117,10 +117,15 @@ def proc_hrcds(include_neg, stats):
 
 
 def main():
+    global DST
     ap = argparse.ArgumentParser()
     ap.add_argument('--include-negatives', action='store_true',
                     help='keep all images (non-spalling -> background). Default: spalling-only.')
+    ap.add_argument('--dst', default=DST,
+                    help='output root (default: data/spalling). Use a separate dir to avoid '
+                         'overwriting the baseline dataset.')
     args = ap.parse_args()
+    DST = args.dst
     ensure_dirs()
     stats = dict(written=0, with_spalling=0, skipped_no_spalling=0)
     proc_cubit(args.include_negatives, stats)

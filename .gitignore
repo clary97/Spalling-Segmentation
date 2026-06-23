@@ -5,6 +5,10 @@ work_dirs/
 *.pt
 checkpoints/
 
+# 평가 산출물 (예측 비교 이미지 등, 용량 큼)
+results_eval_withneg/
+results/lodo/*.log
+
 # python
 __pycache__/
 *.pyc
