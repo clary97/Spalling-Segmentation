@@ -1,0 +1,9 @@
+Loads checkpoint by local backend from path: work_dirs/lodo_convnext-large_40k_cubit/best_mIoU_iter_20000.pth
+
+Per-dataset spalling metrics (test positives, n=1160)
++----------+-----+-------+-------+-----------+--------+
+| dataset  |  n  |  IoU  |   F1  | Precision | Recall |
++----------+-----+-------+-------+-----------+--------+
+| cubit    | 1160 | 59.23 | 74.40 |   73.80   | 75.01 |  <- LEAKED
+| ALL      | 1160 | 59.23 | 74.40 |   73.80   | 75.01 |
++----------+-----+-------+-------+-----------+--------+

@@ -1,0 +1,9 @@
+Loads checkpoint by local backend from path: work_dirs/lodo_convnext-large_40k_damseg/best_mIoU_iter_32000.pth
+
+Per-dataset spalling metrics (test positives, n=366)
++----------+-----+-------+-------+-----------+--------+
+| dataset  |  n  |  IoU  |   F1  | Precision | Recall |
++----------+-----+-------+-------+-----------+--------+
+| damseg   | 366 | 35.61 | 52.52 |   36.72   | 92.20 |  <- clean
+| ALL      | 366 | 35.61 | 52.52 |   36.72   | 92.20 |
++----------+-----+-------+-------+-----------+--------+

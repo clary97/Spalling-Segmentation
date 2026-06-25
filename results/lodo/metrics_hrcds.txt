@@ -1,0 +1,9 @@
+Loads checkpoint by local backend from path: work_dirs/lodo_convnext-large_40k_hrcds/best_mIoU_iter_40000.pth
+
+Per-dataset spalling metrics (test positives, n=1020)
++----------+-----+-------+-------+-----------+--------+
+| dataset  |  n  |  IoU  |   F1  | Precision | Recall |
++----------+-----+-------+-------+-----------+--------+
+| hrcds    | 1020 | 62.84 | 77.18 |   79.50   | 75.00 |  <- clean
+| ALL      | 1020 | 62.84 | 77.18 |   79.50   | 75.00 |
++----------+-----+-------+-------+-----------+--------+
