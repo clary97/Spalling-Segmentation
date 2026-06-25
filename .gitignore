@@ -7,7 +7,9 @@ checkpoints/
 
 # 평가 산출물 (예측 비교 이미지 등, 용량 큼)
 results_eval_withneg/
-results/lodo/*.log
+# 실행 로그 (재현은 스크립트로; 로그 자체는 미추적)
+results/*.log
+results/**/*.log
 
 # python
 __pycache__/

@@ -68,19 +68,102 @@ DamSeg(640×640 개별 사진, 번호 단위)·HRCDS(자체 split)는 누수 없
 
 ---
 
-## 4. Leave-One-Dataset-Out (LODO) — 진행 중
+## 4. Leave-One-Dataset-Out (LODO) — 가장 중요한 결과
 
-데이터셋 2개로 학습 → 나머지 1개 전체로 평가. **누수 자동 제거 + 도메인 갭** 동시 측정.
-- 모델: ConvNeXt-L, 40k iter, 3 fold(held-out = damseg / hrcds / cubit)
-- 데이터: `tools/build_lodo_folds.py` (prefix 필터, 소스 재처리 없음)
-- 실행: `tools/run_lodo.sh` (2-GPU DDP, 순차)
-- 결과: `results/lodo/metrics_{damseg,hrcds,cubit}.txt` (완료 후 본 문서에 표 추가 예정)
+데이터셋 2개로 학습 → 나머지 1개 전체로 평가. **누수 자동 제거 + 도메인 갭** 동시 측정
+(held-out 데이터셋은 학습에 전혀 안 들어가므로, 그 수치는 "본 적 없는 새 도메인" 성능).
+- 모델: ConvNeXt-L, 40k iter, 3 fold(held-out = damseg / hrcds / cubit), 2-GPU DDP
+- 데이터: `tools/build_lodo_folds.py` (prefix 필터, 소스 재처리 없음) / 실행: `tools/run_lodo*.sh`
+- 결과: `results/lodo/metrics_{damseg,hrcds,cubit}.txt`
 
-| held-out | n(test) | IoU | F1 | 비고 |
+| held-out (=새 도메인) | n(test) | **cross-domain IoU** | F1 | Precision | Recall | (참고) in-dist IoU | 낙폭 |
+|---|---|---|---|---|---|---|---|
+| DamSeg | 366 | **35.61** | 52.52 | 36.72 | 92.20 | 82.78 | **−47** |
+| HRCDS | 1020 | **62.84** | 77.18 | 79.50 | 75.00 | 95.95 | **−33** |
+| CUBIT | 1160 | **59.23** | 74.40 | 73.80 | 75.01 | 88.25(누수) | **−29** |
+| **평균** | | **≈52.6** | | | | ~89 | **≈−36** |
+
+**핵심 발견: 한 데이터셋을 통째로 빼고 학습하면(=새 도메인) spalling IoU가 35~63%로 폭락한다.**
+- 기존 baseline 92%는 **같은 데이터셋 내부(in-distribution) 성능**일 뿐, 도메인 전이가 거의 안 됨.
+- DamSeg held-out: precision 36.7 / recall 92.2 → 새 도메인에서 **박락을 마구 과검출**(헛검출 폭증).
+- **실증 데이터(완전 새 도메인)의 현실적 기대치는 92%가 아니라 IoU 30~60%대**로 봐야 한다.
+
+---
+
+## 5. 데이터 효율 곡선 (파인튜닝 리허설) — 실증 라벨 예산 추정
+
+DamSeg를 "실증 데이터(새 도메인)"로 가정. DamSeg를 한 번도 안 본 LODO 모델
+(`lodo_damseg`, N=0일 때 IoU 32)에서 시작해, **DamSeg 라벨 N장으로 파인튜닝**
+(2000 iter, lr 2e-5) 후 **고정 DamSeg test 100장**에 평가. 실증 데이터 도착 시 할 일의 예행연습.
+재현: `tools/build_ft_curve.py` + `tools/run_ft_curve.sh`, 원자료 `results/ft_curve/metrics_n*.txt`.
+
+| 파인튜닝 라벨 수 | spalling IoU | F1 | Precision | Recall |
 |---|---|---|---|---|
-| DamSeg | 366 | _(진행 중)_ | | 도메인 갭 |
-| HRCDS | 1020 | _(진행 중)_ | | 도메인 갭 |
-| CUBIT | 1160 | _(진행 중)_ | | 누수 제거된 진짜 CUBIT 성능 |
+| 0 (그냥 던짐) | 32.17 | 48.68 | 32.92 | 93.41 |
+| **10** | **73.44** | 84.69 | 92.00 | 78.45 |
+| **25** | **85.07** | 91.93 | 93.67 | 90.25 |
+| 50 | 85.69 | 92.29 | 94.77 | 89.95 |
+| 100 | 85.43 | 92.14 | 95.12 | 89.34 |
+| 200 | 87.05 | 93.08 | 93.89 | 92.27 |
+
+**핵심 발견:**
+- 라벨 **10장**만으로 IoU 32 → **73** (+41) 급등. **25장**이면 **85**로 사실상 포화.
+- 25장 파인튜닝(85.07)이 이미 in-distribution baseline(DamSeg 82.78)을 **넘어섬** → 소량 실증 라벨로 충분.
+- 50장 이후는 수익 체감(85~87 정체). precision도 33 → 92~95로 회복 → **헛검출 문제도 파인튜닝으로 해결됨**.
+
+**→ 실증 라벨 예산 가이드: 도메인당 25~50장이면 IoU ~85% 도달.** 파인튜닝 전략이 매우 효과적임이 검증됨.
+(주의: DamSeg 단일 도메인·100장 test 기준 추정치. 실증 도메인 다양성이 크면 도메인별로 이만큼 필요.)
+
+---
+
+## 6. 누수 제거(clean) 통합 baseline — 정직한 기준 확정
+
+CUBIT을 **씬 단위로 재분할**(`--cubit-scene-split`, 누수 0 확인)한 `data/spalling_clean`으로
+ConvNeXt-L 재학습(40k). 재현: `tools/run_clean.sh`, 원자료 `results/clean/metrics_clean.txt`.
+
+| 데이터셋 | n | clean IoU | (기존 누수) IoU | 차이 |
+|---|---|---|---|---|
+| CUBIT | 113 | 82.89 | 88.25 | **−5.36** (누수 거품) |
+| DamSeg | 35 | 82.75 | 82.78 | ~0 |
+| HRCDS | 74 | 95.75 | 95.95 | ~0 |
+| **ALL** | 222 | **90.02** | 92.42 | **−2.40** |
+
+- **누수를 제거한 정직한 통합 baseline = IoU 90.02** (기존 92.42는 +2.4%p 부풀려진 값, 전부 CUBIT 누수에서 옴).
+- DamSeg·HRCDS는 변동 없음 → 누수는 CUBIT만의 문제였음이 재확인.
+- **`work_dirs/clean_convnext-large_40k/best_mIoU_iter_28000.pth` = 실증 파인튜닝의 정직한 시작 체크포인트.**
+
+## 7. Cross-domain 실패 분석 (per-image IoU, LODO 모델)
+
+held-out(새 도메인)에서 이미지별 IoU 분포. 재현: `tools/failure_analysis.py`, `results/failure/`.
+
+| held-out | mean per-img IoU | median | IoU<0.5 비율 |
+|---|---|---|---|
+| DamSeg | 50.5 | 53.6 | 48% (174/366) |
+| CUBIT | 54.9 | 65.4 | 38% (436/1160) |
+| HRCDS | 63.5 | 74.0 | 28% (283/1020) |
+
+- 새 도메인에선 이미지의 **28~48%가 IoU<0.5**로 사실상 실패.
+- 실패 유형은 **과검출(박락 아닌 곳 검출)** 과 **미검출(작은 박락 놓침)** 이 혼재.
+- 특히 **GT 박락 면적이 작은(0.04~0.9%) 이미지에서 IoU 0** 다발 → **소면적/미세 박락이 새 도메인에서 취약**.
+- 시사점: 실증 라벨링 시 **소면적 박락·과검출 유발 표면(얼룩/그림자/텍스처)** 케이스를 우선 수집.
+- 최악 사례 비교 이미지: `results/failure/{damseg,hrcds,cubit}/worst*.jpg` (좌 원본 / 중 GT초록 / 우 예측빨강).
+
+## 8. 운영 임계값(operating point) sweep
+
+baseline 모델 + negatives 포함 test에서 spalling 확률 임계값을 조절. `tools/threshold_sweep.py`.
+
+| 임계값 | IoU | Precision | Recall | neg 이미지 헛경보율 |
+|---|---|---|---|---|
+| 0.30 | 90.70 | 92.95 | 97.40 | 7.8% |
+| **0.50** (기본 argmax) | 91.48 | 94.79 | 96.33 | 5.0% |
+| 0.70 | 91.31 | 96.17 | 94.76 | 4.3% |
+| 0.90 | 89.50 | 97.59 | 91.52 | 2.8% |
+| 0.95 | 87.90 | 98.12 | 89.41 | 2.1% |
+| 0.99 | 83.07 | 98.95 | 83.80 | 1.4% |
+
+- 임계값을 0.5→0.9로 올리면 **헛경보율 5.0%→2.8%**, precision 94.8→97.6, 대신 recall 96.3→91.5.
+- **배포 시 헛경보가 더 치명적이면 0.7~0.9** 권장(놓침 약간 감수). **놓침이 치명적이면 0.5 유지**.
+- IoU 최댓값은 0.5 부근(91.48) → 정확도만 보면 기본값이 최적, 운영 트레이드오프는 별개 결정.
 
 ---
 
