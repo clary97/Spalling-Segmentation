@@ -1,0 +1,11 @@
+Loads checkpoint by local backend from path: work_dirs/clean_convnext-large_40k/best_mIoU_iter_28000.pth
+
+Per-dataset spalling metrics (test positives, n=222)
++----------+-----+-------+-------+-----------+--------+
+| dataset  |  n  |  IoU  |   F1  | Precision | Recall |
++----------+-----+-------+-------+-----------+--------+
+| cubit    | 113 | 82.89 | 90.65 |   90.80   | 90.49 |  <- LEAKED
+| damseg   |  35 | 82.75 | 90.56 |   94.64   | 86.82 |  <- clean
+| hrcds    |  74 | 95.75 | 97.83 |   97.09   | 98.58 |  <- clean
+| ALL      | 222 | 90.02 | 94.75 |   94.51   | 94.99 |
++----------+-----+-------+-------+-----------+--------+

@@ -61,7 +61,7 @@ def split_of(idx, n, ratios=(0.8, 0.1, 0.1)):
 
 
 # ---------------- CUBIT ----------------
-def proc_cubit(include_neg, stats):
+def proc_cubit(include_neg, stats, scene_split=False):
     rgb_dir = f'{SRC}/CUBIT_Seg/spalling512/outputs_RGB'
     msk_dir = f'{SRC}/CUBIT_Seg/spalling512/outputs_Mask'
     # use flat top-level files (canonical set)
@@ -72,12 +72,32 @@ def proc_cubit(include_neg, stats):
         img = osp.join(rgb_dir, stem + '.jpg')
         if osp.exists(img):
             items.append((stem, img, m))
-    rng = random.Random(SEED)
-    rng.shuffle(items)
-    n = len(items)
-    ntr, nva = int(n * 0.8), int(n * 0.1)
-    for i, (stem, img, m) in enumerate(items):
-        split = 'train' if i < ntr else ('val' if i < ntr + nva else 'test')
+
+    if scene_split:
+        # CUBIT tiles are 512 crops of ~59 source scenes (e.g. "1_10_38" -> scene "1_10").
+        # Split by SCENE so all tiles of one source photo land in the same split (no leakage).
+        scenes = {}
+        for it in items:
+            scene = '_'.join(it[0].split('_')[:2])
+            scenes.setdefault(scene, []).append(it)
+        keys = sorted(scenes)
+        rng = random.Random(SEED)
+        rng.shuffle(keys)
+        nsc = len(keys)
+        ntr, nva = int(nsc * 0.8), int(nsc * 0.1)
+        assign = {}
+        for i, k in enumerate(keys):
+            assign[k] = 'train' if i < ntr else ('val' if i < ntr + nva else 'test')
+        ordered = [(assign['_'.join(it[0].split('_')[:2])], it) for it in items]
+    else:
+        rng = random.Random(SEED)
+        rng.shuffle(items)
+        n = len(items)
+        ntr, nva = int(n * 0.8), int(n * 0.1)
+        ordered = [('train' if i < ntr else ('val' if i < ntr + nva else 'test'), it)
+                   for i, it in enumerate(items)]
+
+    for split, (stem, img, m) in ordered:
         arr = np.array(Image.open(m).convert('RGB'))
         sp = (arr[..., 0] == 128) & (arr[..., 1] == 0) & (arr[..., 2] == 0)
         write_pair(split, 'cubit_' + sanitize(stem), img, sp, include_neg, stats)
@@ -124,11 +144,13 @@ def main():
     ap.add_argument('--dst', default=DST,
                     help='output root (default: data/spalling). Use a separate dir to avoid '
                          'overwriting the baseline dataset.')
+    ap.add_argument('--cubit-scene-split', action='store_true',
+                    help='split CUBIT by source scene (no tile leakage across train/val/test).')
     args = ap.parse_args()
     DST = args.dst
     ensure_dirs()
     stats = dict(written=0, with_spalling=0, skipped_no_spalling=0)
-    proc_cubit(args.include_negatives, stats)
+    proc_cubit(args.include_negatives, stats, scene_split=args.cubit_scene_split)
     proc_damseg(args.include_negatives, stats)
     proc_hrcds(args.include_negatives, stats)
 
