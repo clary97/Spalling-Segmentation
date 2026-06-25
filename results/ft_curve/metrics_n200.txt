@@ -1,0 +1,9 @@
+Loads checkpoint by local backend from path: work_dirs/ft_damseg_n200/iter_2000.pth
+
+Per-dataset spalling metrics (test positives, n=100)
++----------+-----+-------+-------+-----------+--------+
+| dataset  |  n  |  IoU  |   F1  | Precision | Recall |
++----------+-----+-------+-------+-----------+--------+
+| damseg   | 100 | 87.05 | 93.08 |   93.89   | 92.27 |  <- clean
+| ALL      | 100 | 87.05 | 93.08 |   93.89   | 92.27 |
++----------+-----+-------+-------+-----------+--------+
