@@ -1,0 +1,13 @@
+Loads checkpoint by local backend from path: work_dirs/lodo_convnext-large_40k_cubit/best_mIoU_iter_20000.pth
+
+=== cubit: 1160 imgs | mean per-img IoU 54.9 | median 65.4 | <0.5 IoU: 436 imgs (38%) ===
+worst 8: (IoU | FPfrac | FNfrac | GTfrac | name)
+    0.0 |  0.00 | 35.27 | 35.27 | UNDER-detect | cubit_1_10_12
+    0.0 |  0.00 |  4.47 |  4.47 | UNDER-detect | cubit_1_11_27
+    0.0 |  0.00 |  0.02 |  0.02 | UNDER-detect | cubit_1_18_51
+    0.0 |  0.38 |  3.01 |  3.01 | UNDER-detect | cubit_1_19_50
+    0.0 |  0.00 |  0.04 |  0.04 | UNDER-detect | cubit_1_1_34
+    0.0 |  0.00 |  0.03 |  0.03 | UNDER-detect | cubit_1_1_35
+    0.0 |  0.00 |  3.56 |  3.56 | UNDER-detect | cubit_1_1_43
+    0.0 |  0.00 |  0.45 |  0.45 | UNDER-detect | cubit_1_1_80
+saved 8 panels -> results/failure/cubit (left=orig, mid=GT green, right=pred red)

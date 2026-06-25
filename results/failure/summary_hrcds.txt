@@ -1,0 +1,13 @@
+Loads checkpoint by local backend from path: work_dirs/lodo_convnext-large_40k_hrcds/best_mIoU_iter_40000.pth
+
+=== hrcds: 1020 imgs | mean per-img IoU 63.5 | median 74.0 | <0.5 IoU: 283 imgs (28%) ===
+worst 8: (IoU | FPfrac | FNfrac | GTfrac | name)
+    0.0 |  0.00 | 35.84 | 35.84 | UNDER-detect | hrcds_train_0014
+    0.0 |  0.00 |  4.88 |  4.88 | UNDER-detect | hrcds_train_0086
+    0.0 |  0.00 |  0.42 |  0.42 | UNDER-detect | hrcds_train_0128
+    0.0 |  5.30 |  0.72 |  0.72 | OVER-detect  | hrcds_train_0132
+    0.0 |  4.94 | 15.37 | 15.37 | UNDER-detect | hrcds_train_0150
+    0.0 |  0.00 | 37.02 | 37.02 | UNDER-detect | hrcds_train_0183
+    0.0 |  0.00 | 50.46 | 50.46 | UNDER-detect | hrcds_train_0190
+    0.0 |  0.00 | 13.64 | 13.64 | UNDER-detect | hrcds_train_0226
+saved 8 panels -> results/failure/hrcds (left=orig, mid=GT green, right=pred red)
